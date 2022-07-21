@@ -1,0 +1,84 @@
+ApplicationContext
+    Egy "doboz", ebben vannak a beanek.
+    A Spring-es alkalmazás indulásakor automatikus létrejön és feltöltésre kerül beanekkel,
+    az alkalmazás befejezésekor pedig megsemmisül.
+
+Bean
+    Az ApplicationContext-ben ("dobozban") lévő példányok / objektumok.
+    Alapértelmezetten singleton (csak 1 példány jön létre minden osztályból, minden factory metódussal).
+    Minden beannek van típusa és neve.
+    Általában egy kicserélhető szolgáltatást valósít meg.
+    Pl. pénzváltó (szolgáltatás marad, viszont az árfolyam változhat).
+
+==========================
+Hogyan kerülnek a beanek a kontextusba?
+==========================
+
+1. Megfelelő annotációval.
+@Component, @SpringBootApplication, @Service, @Respository, @Controller...
+A singleton példánynak az alapértelmezett neve az osztály neve lesz kisbetűvel.
+Pl. eurExchange.
+
+2. Factory metódussal.
+@Bean annotáció
+Alapértelmezett név: metódus neve (pl. rezsiExchange)
+
+@Configuration
+public class RezsiExchangeFactory {
+    @Bean
+    @Primary
+    public Exchange rezsiExchange() {
+        return new Exchange() {
+            @Override
+            public double fromHUF(int huf) {
+                return huf / 400.0;
+            }
+        };
+    }
+}
+
+
+==========================
+Hogyan veszünk ki beaneket a kontextusból?
+==========================
+1. Kézzel
+Név alapján, kasztolni kell (Object a visszatérési érték).
+
+Exchange exchange = (Exchange) context.getBean("eurExchange");
+
+2. Field-injection
+@Autowired
+private Exchange exchange;
+
+Bármelyik kompatibilis bean (pl. UsdExchange és EurExchange kompatibilis az Exchange interfésszel)
+beszúrásra kerülhet.
+
+Ha nem egyértelmű, akkor nem indul el az alkalmazás (hiba keletkezik).
+Szükség esetén (több jelölt) a @Primary vagy a @Qualifier annotációk segítségével tehető egyértelművé a választás.
+
+@Autowired
+@Qualifier("eurExchange") // név alapján
+private Exchange exchange;
+
+@Qualifier erősebb, mint a @Primary
+
+3. Constructor-injection
+public MainRunner(ApplicationContext context, Exchange exchange) {
+        this.context = context;
+        this.exchange = exchange;
+    }
+
+lsd. @Primary és @Qualifier
+
+public MainRunner(ApplicationContext context, @Qualifier("eurExchange") Exchange exchange) {
+        this.context = context;
+        this.exchange = exchange;
+    }
+
+4. setter-injection
+@Autowired
+void setExchange(Exchange exchange) {
+    this.exchange = exchange;
+}
+
+lsd. @Primary és @Qualifier
