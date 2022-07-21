@@ -14,9 +14,11 @@ import org.springframework.context.annotation.Bean;
 // (springPracticeApplication)
 @SpringBootApplication
 public class SpringPracticeApplication {
-    @Autowired
-    private ApplicationContext context;
+    // @Autowired
+    // private ApplicationContext context;
 
+    // Itt még nincs beállítva az ApplicationContext.
+    // "Üres a doboz".
     public static void main(String[] args) {
         SpringApplication.run(SpringPracticeApplication.class, args);
     }
@@ -25,7 +27,7 @@ public class SpringPracticeApplication {
     // Alapértelmezetten singleton (egyetlen példány).
     // Csak egyszer kerül a factory metódus meghívásra.
     // Alapértelmezett név a metódus neve lesz (run).
-    @Bean
+    /* @Bean
     public CommandLineRunner run() {
         return (args) -> {
             System.out.println("Beans in ApplicationContext:");
@@ -34,6 +36,6 @@ public class SpringPracticeApplication {
                 System.out.println(name);
             }
         };
-    }
+    } */
 
 }
